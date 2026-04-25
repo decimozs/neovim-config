@@ -73,6 +73,9 @@ vim.pack.add({
 	{
 		src = "https://github.com/j-hui/fidget.nvim",
 	},
+	{
+		src = "https://github.com/nickjvandyke/opencode.nvim",
+	},
 })
 
 require("colorscheme")
@@ -550,6 +553,7 @@ require("flash").setup({
 		},
 	},
 })
+
 require("fidget").setup({
 	notification = {
 		window = {
@@ -557,3 +561,10 @@ require("fidget").setup({
 		},
 	},
 })
+
+vim.keymap.set({ "n", "x" }, "<C-a>", function()
+	require("opencode").ask("@this: ", { submit = true })
+end, { desc = "Ask opencode…" })
+vim.keymap.set({ "n", "t" }, "<leader>oc", function()
+	require("opencode").toggle()
+end, { desc = "Toggle opencode" })
