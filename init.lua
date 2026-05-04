@@ -34,9 +34,6 @@ vim.pack.add({
 		src = "https://github.com/nvim-telescope/telescope.nvim",
 	},
 	{
-		src = "https://github.com/nvimdev/lspsaga.nvim",
-	},
-	{
 		src = "https://github.com/nvim-tree/nvim-web-devicons",
 	},
 	{
@@ -76,6 +73,12 @@ vim.pack.add({
 	{
 		src = "https://github.com/nickjvandyke/opencode.nvim",
 	},
+	{
+		src = "https://github.com/numtostr/comment.nvim",
+	},
+	{ src = "https://github.com/folke/noice.nvim" },
+	{ src = "https://github.com/MunifTanjim/nui.nvim" },
+	{ src = "https://github.com/rachartier/tiny-inline-diagnostic.nvim" },
 })
 
 require("colorscheme")
@@ -170,15 +173,6 @@ require("mason-tool-installer").setup({
 	ensure_installed = { "stylua", "ruff", "eslint_d", "biome" },
 })
 
-require("lspsaga").setup({
-	symbol_in_winbar = {
-		enable = false,
-	},
-	ui = {
-		code_action = "",
-	},
-})
-
 local function lsp_on_attach(ev)
 	local client = vim.lsp.get_client_by_id(ev.data.client_id)
 	if not client then
@@ -216,15 +210,6 @@ local function lsp_on_attach(ev)
 	opts.desc = "Show line diagnostics"
 	keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
 
-	opts.desc = "Go to previous diagnostic"
-	keymap.set("n", "[d", "<cmd>Lspsaga diagnostic_jump_prev<cr>")
-
-	opts.desc = "Go to next diagnostic"
-	keymap.set("n", "]d", "<cmd>Lspsaga diagnostic_jump_next<cr>")
-
-	opts.desc = "Show documentation for what is under cursor"
-	keymap.set("n", "K", "<cmd>Lspsaga hover_doc<cr>")
-
 	opts.desc = "Restart LSP"
 	keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
 
@@ -249,20 +234,41 @@ require("blink.cmp").setup({
 		preset = "none",
 		["<C-Space>"] = { "show", "hide" },
 		["<CR>"] = { "accept", "fallback" },
-		["<C-j>"] = { "select_next", "fallback" },
-		["<C-k>"] = { "select_prev", "fallback" },
+		["<Up>"] = { "select_prev", "fallback" },
+		["<Down>"] = { "select_next", "fallback" },
+		["<C-u>"] = { "scroll_signature_up", "fallback" },
+		["<C-d>"] = { "scroll_signature_down", "fallback" },
+		["<C-k>"] = { "show_signature", "hide_signature", "fallback" },
 		["<Tab>"] = { "snippet_forward", "fallback" },
 		["<S-Tab>"] = { "snippet_backward", "fallback" },
+		["K"] = { "show_documentation", "hide_documentation", "fallback" },
 	},
 	appearance = { nerd_font_variant = "mono" },
-	completion = { menu = { auto_show = true } },
+	completion = {
+		menu = {
+			auto_show = true,
+			draw = {
+				columns = { { "kind_icon" }, { "label", "label_description", gap = 1 }, { "source_name" } },
+				treesitter = { "lsp" },
+			},
+		},
+		ghost_text = { enabled = true },
+		documentation = {
+			auto_show = true,
+			auto_show_delay_ms = 500,
+			window = {
+				max_width = 50,
+				max_height = 20,
+			},
+		},
+	},
+	signature = { enabled = true, window = { show_documentation = false } },
 	sources = { default = { "lsp", "path", "buffer", "snippets" } },
 	snippets = {
 		expand = function(snippet)
 			require("luasnip").lsp_expand(snippet)
 		end,
 	},
-
 	fuzzy = {
 		implementation = "prefer_rust",
 		prebuilt_binaries = { download = true },
@@ -287,13 +293,14 @@ vim.lsp.enable({
 	"pyright",
 	"bashls",
 	"ts_ls",
+	"astro",
 	"clangd",
 })
 
 require("telescope").setup({
 	defaults = {
 		prompt_prefix = "   ",
-		selection_caret = "    ",
+		selection_caret = "> ",
 		entry_prefix = "   ",
 		path_display = { "truncate" },
 		vimgrep_arguments = {
@@ -383,10 +390,8 @@ local modes = {
 	["no"] = "N",
 	["v"] = "V",
 	["V"] = "V",
-	[""] = "V",
 	["s"] = "S",
 	["S"] = "S",
-	[""] = "S",
 	["i"] = "I",
 	["ic"] = "I",
 	["R"] = "R",
@@ -565,6 +570,53 @@ require("fidget").setup({
 vim.keymap.set({ "n", "x" }, "<C-a>", function()
 	require("opencode").ask("@this: ", { submit = true })
 end, { desc = "Ask opencode…" })
-vim.keymap.set({ "n", "t" }, "<leader>oc", function()
-	require("opencode").toggle()
-end, { desc = "Toggle opencode" })
+
+require("Comment").setup()
+
+require("noice").setup({
+	cmdline = {
+		enabled = true,
+		view = "cmdline_popup",
+		opts = {},
+		format = {
+			cmdline = { pattern = "^:", icon = "", lang = "vim" },
+			search_down = { kind = "search", pattern = "^/", icon = " ", lang = "regex" },
+			search_up = { kind = "search", pattern = "^%?", icon = " ", lang = "regex" },
+			filter = { pattern = "^:%s*!", icon = "$", lang = "bash" },
+			lua = { pattern = { "^:%s*lua%s+", "^:%s*lua%s*=%s*", "^:%s*=%s*" }, icon = "", lang = "lua" },
+			help = { pattern = "^:%s*he?l?p?%s+", icon = "" },
+			input = { view = "cmdline_input", icon = "󰥻 " },
+		},
+	},
+	messages = { enabled = false },
+	popupmenu = { enabled = false },
+	notify = { enabled = false },
+	lsp = {
+		progress = { enabled = false },
+		hover = { enabled = false },
+		signature = { enabled = false },
+		message = { enabled = false },
+		smart_move = { enabled = false },
+		override = {
+			["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+			["vim.lsp.util.stylize_markdown"] = true,
+			["cmp.entry.get_documentation"] = true,
+		},
+	},
+	routes = {
+		{
+			view = "notify",
+			filter = { event = "msg_show" },
+			opts = { skip = true },
+		},
+	},
+})
+
+require("tiny-inline-diagnostic").setup({
+	preset = "classic",
+	options = {
+		multilines = {
+			enabled = true,
+		},
+	},
+})

@@ -30,4 +30,3 @@ keymap.set("n", "<leader>rr", "<C-W>l", { desc = "move to the window on the righ
 keymap.set("n", "<leader>ll", "<C-W>h", { desc = "move to the window on the left" })
 keymap.set("n", "<leader>tt", "<C-W>k", { desc = "move to the window on the top" })
 keymap.set("n", "<leader>bb", "<C-W>j", { desc = "move to the window on the below" })
-keymap.set("n", "K", "<cmd>Lspsaga hover_doc")
