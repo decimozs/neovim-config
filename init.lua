@@ -227,6 +227,13 @@ local function lsp_on_attach(ev)
 	end
 end
 
+vim.api.nvim_create_autocmd("FileChangedShell", {
+	callback = function()
+		vim.v.fcs_choice = "reload"
+	end,
+})
+
+local augroup = vim.api.nvim_create_augroup("UserLspAttach", { clear = true })
 vim.api.nvim_create_autocmd("LspAttach", { group = augroup, callback = lsp_on_attach })
 
 require("blink.cmp").setup({
@@ -353,7 +360,7 @@ require("lint").linters_by_ft = {
 	python = { "ruff" },
 }
 
-vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+vim.api.nvim_create_autocmd({ "BufWritePost", "InsertLeave" }, {
 	callback = function()
 		require("lint").try_lint()
 	end,
