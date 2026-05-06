@@ -295,6 +295,7 @@ vim.lsp.enable({
 	"ts_ls",
 	"astro",
 	"clangd",
+	"json",
 })
 
 require("telescope").setup({
@@ -348,6 +349,7 @@ require("lint").linters_by_ft = {
 	javascriptreact = { "eslint_d", "biomejs" },
 	typescriptreact = { "eslint_d", "biomejs" },
 	astro = { "eslint_d", "biomejs" },
+	json = { "eslint_d", "biomejs" },
 	python = { "ruff" },
 }
 
