@@ -666,7 +666,11 @@ require("tiny-inline-diagnostic").setup({
 
 require("toggleterm").setup({
 	direction = "float",
+	shell = "pwsh",
 })
+
+vim.keymap.set("n", "<leader>tf", "<cmd>ToggleTerm direction=float<cr>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>th", "<cmd>ToggleTerm size=10 direction=horizontal<cr>", { noremap = true, silent = true })
 
 local Terminal = require("toggleterm.terminal").Terminal
 local lazygit = Terminal:new({ cmd = "lazygit", hidden = true })
