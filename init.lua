@@ -72,6 +72,7 @@ vim.pack.add({
 	{ src = "https://github.com/MunifTanjim/nui.nvim" },
 	{ src = "https://github.com/rachartier/tiny-inline-diagnostic.nvim" },
 	{ src = "https://github.com/folke/snacks.nvim" },
+	{ src = "https://github.com/akinsho/toggleterm.nvim" },
 })
 
 require("colorscheme")
@@ -662,3 +663,16 @@ require("tiny-inline-diagnostic").setup({
 		},
 	},
 })
+
+require("toggleterm").setup({
+	direction = "float",
+})
+
+local Terminal = require("toggleterm.terminal").Terminal
+local lazygit = Terminal:new({ cmd = "lazygit", hidden = true })
+
+function _lazygit_toggle()
+	lazygit:toggle()
+end
+
+vim.api.nvim_set_keymap("n", "<leader>g", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true })
