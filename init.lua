@@ -1,14 +1,6 @@
 require("options")
 require("keymaps")
 
-vim.api.nvim_set_hl(0, "TelescopeNormal", { bg = "none" })
-vim.api.nvim_set_hl(0, "TelescopePromptBorder", { bg = "none" })
-vim.api.nvim_set_hl(0, "TelescopePromptNormal", { bg = "none" })
-vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { bg = "none" })
-vim.api.nvim_set_hl(0, "TelescopeResultsNormal", { bg = "none" })
-vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { bg = "none" })
-vim.api.nvim_set_hl(0, "WinSeparator", { fg = "none", bg = "none" })
-
 vim.pack.add({
 	{ src = "https://github.com/datsfilipe/vesper.nvim" },
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
@@ -79,6 +71,7 @@ vim.pack.add({
 	{ src = "https://github.com/folke/noice.nvim" },
 	{ src = "https://github.com/MunifTanjim/nui.nvim" },
 	{ src = "https://github.com/rachartier/tiny-inline-diagnostic.nvim" },
+	{ src = "https://github.com/folke/snacks.nvim" },
 })
 
 require("colorscheme")
@@ -474,7 +467,7 @@ require("lualine").setup({
 				"branch",
 			},
 		},
-		lualine_c = { "filetype", "filename" },
+		lualine_c = { "filetype", "filename", require("opencode").statusline },
 		lualine_x = {},
 		lualine_z = {},
 	},
@@ -609,6 +602,9 @@ require("fidget").setup({
 vim.keymap.set({ "n", "x" }, "<C-a>", function()
 	require("opencode").ask("@this: ", { submit = true })
 end, { desc = "Ask opencode…" })
+vim.keymap.set("n", "<leader>os", function()
+	require("opencode").select()
+end, { desc = "OpenCode Actions/Sessions" })
 
 require("Comment").setup()
 
@@ -648,6 +644,13 @@ require("noice").setup({
 			filter = { event = "msg_show" },
 			opts = { skip = true },
 		},
+	},
+})
+
+require("snacks").setup({
+	picker = {
+		enabled = true,
+		ui_select = true,
 	},
 })
 
