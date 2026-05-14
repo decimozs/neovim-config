@@ -19,3 +19,6 @@ option.cmdheight = 0
 option.fillchars = { eob = " ", vert = " ", verthoriz = " " }
 option.laststatus = 3
 option.backupcopy = "yes"
+option.backup = false
+option.writebackup = false
+option.swapfile = false

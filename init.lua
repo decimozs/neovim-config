@@ -52,7 +52,7 @@ vim.pack.add({
 		src = "https://github.com/windwp/nvim-autopairs",
 	},
 	{
-		src = "https://github.com/norcalli/nvim-colorizer.lua",
+		src = "https://github.com/brenoprata10/nvim-highlight-colors",
 	},
 	{
 		src = "https://github.com/kylechui/nvim-surround",
@@ -257,6 +257,32 @@ require("blink.cmp").setup({
 			draw = {
 				columns = { { "kind_icon" }, { "label", "label_description", gap = 1 }, { "source_name" } },
 				treesitter = { "lsp" },
+				components = {
+					kind_icon = {
+						text = function(ctx)
+							local icon = ctx.kind_icon
+							if ctx.item.source_name == "LSP" then
+								local color_item =
+									require("nvim-highlight-colors").format(ctx.item.documentation, { kind = ctx.kind })
+								if color_item and color_item.abbr ~= "" then
+									icon = color_item.abbr
+								end
+							end
+							return icon .. ctx.icon_gap
+						end,
+						highlight = function(ctx)
+							local highlight = "BlinkCmpKind" .. ctx.kind
+							if ctx.item.source_name == "LSP" then
+								local color_item =
+									require("nvim-highlight-colors").format(ctx.item.documentation, { kind = ctx.kind })
+								if color_item and color_item.abbr_hl_group then
+									highlight = color_item.abbr_hl_group
+								end
+							end
+							return highlight
+						end,
+					},
+				},
 			},
 		},
 		ghost_text = { enabled = true },
@@ -508,7 +534,11 @@ require("nvim-tree").setup({
 })
 
 require("nvim-autopairs").setup({})
-require("colorizer").setup({})
+require("nvim-highlight-colors").setup({
+	formatting = {
+		format = require("nvim-highlight-colors").format,
+	},
+})
 require("nvim-web-devicons").setup({
 	strict = true,
 	override_by_extension = {
